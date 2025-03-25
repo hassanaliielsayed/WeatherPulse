@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.WeatherPulse" parent="android:Theme.Material.Light.NoActionBar">
+
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/weather</item>
+        <item name="android:windowSplashScreenBackground">@color/baby_blue</item>
+
+    </style>
+</resources>
