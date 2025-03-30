@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.handwriting.handwritingHandler
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -54,7 +53,6 @@ import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.model.Daily
 import com.example.weatherpulse.util.Result
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -167,17 +165,17 @@ fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
 fun getWeatherIconRes(iconCode: String?): Int {
     return when (iconCode) {
 
-        "01d" -> R.drawable.ic_clear_day
-        "01n" -> R.drawable.ic_clear_night
-        "02d", "02n" -> R.drawable.ic_partly_cloudy
-        "03d", "03n" -> R.drawable.ic_cloudy
-        "04d", "04n" -> R.drawable.ic_rain
-        "09d", "09n" -> R.drawable.ic_rain
-        "10d", "10n" -> R.drawable.ic_rain
-        "11d", "11n" -> R.drawable.ic_thunderstorm
-        "13d", "13n" -> R.drawable.ic_snow
-        "50d", "50n" -> R.drawable.ic_fog
-        else -> R.drawable.ic_weather_placeholder
+        "01d"-> R.drawable.sunny
+        "01n"-> R.drawable.clear_sky_night
+        "02d"-> R.drawable.cloudy_sunny
+        "02n"-> R.drawable.cloudmoon
+        "03d","03n","04d","04n"-> R.drawable.clouds
+        "09d","9n","10d","10n"-> R.drawable.rainy_new
+        "13d","13n"-> R.drawable.snow_new
+        "11d","11n"-> R.drawable.thunderstorms
+        "50d","50n"-> R.drawable.storm
+        else -> R.drawable.sunny
+
 
     }
 }

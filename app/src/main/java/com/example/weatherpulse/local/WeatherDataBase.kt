@@ -4,8 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.weatherpulse.model.FavouritePlacesPojo
+import com.example.weatherpulse.model.LocationKeyConverter
 
-//@Database()
+@Database(entities = [FavouritePlacesPojo::class], version = 1)
+@TypeConverters(LocationKeyConverter::class)
 abstract class WeatherDataBase: RoomDatabase() {
 
     abstract fun getDao(): WeatherDao

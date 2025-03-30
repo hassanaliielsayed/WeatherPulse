@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -36,5 +37,17 @@ sealed class ButtonBarScreen (
         route = "setting",
         title = "Setting",
         icon = Icons.Default.Settings
+    )
+
+    object MapScreen: ButtonBarScreen(
+        route = "MapScreen",
+        title = "MapScreen",
+        icon = Icons.Default.ShoppingCart
+    )
+
+    object Preview: ButtonBarScreen(
+        route = "Preview",
+        title = "Preview",
+        icon = Icons.Default.Home
     )
 }
