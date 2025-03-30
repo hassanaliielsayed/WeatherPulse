@@ -88,5 +88,9 @@ dependencies {
     // Location
     implementation(libs.play.services.location)
 
+    // OSM Map
+    implementation ("org.osmdroid:osmdroid-android:6.1.20")
+
+
 
 }

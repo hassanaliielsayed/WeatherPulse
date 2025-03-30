@@ -20,6 +20,7 @@ class HomeViewModel(private val repo: WeatherRepo): ViewModel() {
 
     fun getCurrentWeather(location: Location){
         viewModelScope.launch(Dispatchers.IO){
+
             try {
 
                 val result = repo.getCurrentWeather(location)

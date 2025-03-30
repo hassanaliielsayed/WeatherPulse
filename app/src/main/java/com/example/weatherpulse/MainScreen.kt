@@ -2,6 +2,8 @@ package com.example.weatherpulse
 
 import android.annotation.SuppressLint
 import android.location.Location
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -19,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(myLocation: MutableState<Location?>) {
