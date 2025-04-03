@@ -11,4 +11,21 @@ interface WeatherLocalDataSourceInterface {
 
     suspend fun deleteLocation(location: FavouritePlacesPojo): Int
 
+    suspend fun getLanguage(): String
+    suspend fun setLanguage(value: String)
+
+    suspend fun getUnitSystem(): String
+    suspend fun setUnitSystem(value: String)
+
+    suspend fun getLocationSource(): String
+    suspend fun setLocationSource(value: String)
+
+    suspend fun getLat(): Double
+    suspend fun setLat(lat: Double)
+
+    suspend fun getLon(): Double
+    suspend fun setLon(lon: Double)
+
+    suspend fun getCity(): String
+
 }

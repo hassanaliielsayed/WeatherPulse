@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            //locationState = remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER)) }
+
 
             val response = remember { mutableStateOf(true) }
             installSplashScreen().setKeepOnScreenCondition {
