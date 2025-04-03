@@ -1,9 +1,14 @@
 package com.example.weatherpulse.local
 
+import SharedPrefInterface
+import com.example.weatherpulse.local.db.WeatherDao
 import com.example.weatherpulse.model.FavouritePlacesPojo
 import kotlinx.coroutines.flow.Flow
 
-class WeatherLocalDataSource(private val dao: WeatherDao): WeatherLocalDataSourceInterface {
+class WeatherLocalDataSource(
+    private val dao: WeatherDao,
+    private val sharedPref: SharedPrefInterface
+): WeatherLocalDataSourceInterface {
 
 
     override suspend fun getAllLocations(): Flow<List<FavouritePlacesPojo>> {
@@ -17,4 +22,21 @@ class WeatherLocalDataSource(private val dao: WeatherDao): WeatherLocalDataSourc
     override suspend fun deleteLocation(location: FavouritePlacesPojo): Int {
         return dao.deleteLocation(location)
     }
+
+    override suspend fun getLanguage(): String = sharedPref.getLanguage()
+    override suspend fun setLanguage(value: String) = sharedPref.setLanguage(value)
+
+    override suspend fun getUnitSystem(): String = sharedPref.getUnitSystem()
+    override suspend fun setUnitSystem(value: String) = sharedPref.setUnitSystem(value)
+
+    override suspend fun getLocationSource(): String = sharedPref.getLocationSource()
+    override suspend fun setLocationSource(value: String) = sharedPref.setLocationSource(value)
+
+    override suspend fun getLat(): Double = sharedPref.getLat()
+    override suspend fun setLat(lat: Double) = sharedPref.setLat(lat)
+
+    override suspend fun getLon(): Double = sharedPref.getLon()
+    override suspend fun setLon(lon: Double) = sharedPref.setLon(lon)
+
+    override suspend fun getCity(): String = sharedPref.getCity()
 }

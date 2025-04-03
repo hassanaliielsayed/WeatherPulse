@@ -6,5 +6,5 @@ import retrofit2.http.Query
 
 interface WeatherRemoteDataSourceInterface {
 
-    suspend fun getCurrentWeather(location: Location): WeatherDetailsResponse
+    suspend fun getCurrentWeather(location: Location, unit: String = "metric"): WeatherDetailsResponse
 }

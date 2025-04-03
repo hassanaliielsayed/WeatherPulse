@@ -10,19 +10,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.weatherpulse.favourite.view.FavoriteScreen
 import com.example.weatherpulse.favourite.viewmodel.FavViewModel
 import com.example.weatherpulse.home.view.HomeScreen
 import com.example.weatherpulse.home.viewmodel.HomeViewModel
-import com.example.weatherpulse.local.WeatherDataBase
+import com.example.weatherpulse.local.db.WeatherDataBase
 import com.example.weatherpulse.local.WeatherLocalDataSource
+import com.example.weatherpulse.local.sharedpref.SharedPref
 import com.example.weatherpulse.mapscreen.view.MapScreen
 import com.example.weatherpulse.remote.WeatherClient
 import com.example.weatherpulse.remote.WeatherRemoteDataSource
 import com.example.weatherpulse.repo.Repo
 import com.example.weatherpulse.screens.AlarmScreen
-import com.example.weatherpulse.screens.SettingScreen
+import com.example.weatherpulse.setting.view.SettingScreen
+import com.example.weatherpulse.setting.viewmodel.SettingViewModel
 import com.example.weatherpulse.util.PreviewScreen
+import com.example.weatherpulse.util.SettingHelpers
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -32,6 +36,14 @@ fun ButtonNavGraph(
 ) {
     val context = LocalContext.current
 
+    val repo = Repo.getInstance(
+        WeatherRemoteDataSource(WeatherClient.weatherService),
+        WeatherLocalDataSource(
+            WeatherDataBase.getInstance(context).getDao(),
+            SharedPref.getInstance(context)
+        )
+    )
+
     NavHost(
         navController = navController,
         startDestination = ButtonBarScreen.Home.route
@@ -39,12 +51,7 @@ fun ButtonNavGraph(
         // Home
         composable(route = ButtonBarScreen.Home.route) {
             val homeViewModel: HomeViewModel = viewModel(
-                factory = HomeViewModel.HomeFactory(
-                    Repo.getInstance(
-                        WeatherRemoteDataSource(WeatherClient.weatherService),
-                        WeatherLocalDataSource(WeatherDataBase.getInstance(context).getDao())
-                    )
-                )
+                factory = HomeViewModel.HomeFactory(repo)
             )
             HomeScreen(homeViewModel, myLocation)
         }
@@ -52,17 +59,12 @@ fun ButtonNavGraph(
         // Favorites
         composable(route = ButtonBarScreen.Favourite.route) {
             val favViewModel: FavViewModel = viewModel(
-                factory = FavViewModel.FavFactory(
-                    Repo.getInstance(
-                        WeatherRemoteDataSource(WeatherClient.weatherService),
-                        WeatherLocalDataSource(WeatherDataBase.getInstance(context).getDao())
-                    )
-                )
+                factory = FavViewModel.FavFactory(repo)
             )
             FavoriteScreen(
                 viewModel = favViewModel,
                 onPickLocation = {
-                    navController.navigate(ButtonBarScreen.MapScreen.route)
+                    navController.navigate("MapScreen?source=favorites")
                 },
                 onCityClick = { locationKey, cityName ->
                     navController.currentBackStackEntry?.savedStateHandle?.apply {
@@ -82,19 +84,54 @@ fun ButtonNavGraph(
 
         // Settings
         composable(route = ButtonBarScreen.Setting.route) {
-            SettingScreen()
+            val settingViewModel: SettingViewModel = viewModel(
+                factory = SettingViewModel.SettingFactory(repo)
+            )
+            SettingScreen(
+                viewModel = settingViewModel,
+                onRequestMapPicker = {
+                    navController.navigate("MapScreen?source=settings")
+                },
+                onRequestLocationPermission = {
+                    SettingHelpers.checkAndRequestLocationPermission(context)
+                },
+                onRequestLocationEnable = {
+                    SettingHelpers.promptEnableLocation(context)
+                },
+                onRecreateActivity = {
+                    SettingHelpers.recreateActivity(context)
+                }
+            )
         }
 
-        // Map screen (used temporarily, not part of bottom bar)
-        composable(route = ButtonBarScreen.MapScreen.route) {
+        // Map screen
+        composable(
+            route = "MapScreen?source={source}",
+            arguments = listOf(
+                navArgument("source") { defaultValue = "favorites" }
+            )
+        ) { backStackEntry ->
+            val source = backStackEntry.arguments?.getString("source") ?: "favorites"
+
             MapScreen(
                 onLocationSelected = { lat, lon, city ->
-                    navController.currentBackStackEntry?.savedStateHandle?.apply {
-                        set("lat", lat)
-                        set("lon", lon)
-                        set("city", city)
+                    if (source == "settings") {
+                        val sharedPref = SharedPref.getInstance(context)
+                        sharedPref.setLat(lat)
+                        sharedPref.setLon(lon)
+                        sharedPref.setCity(city)
+
+                        navController.navigate(ButtonBarScreen.Home.route) {
+                            popUpTo(ButtonBarScreen.Setting.route) { inclusive = true }
+                        }
+                    } else {
+                        navController.currentBackStackEntry?.savedStateHandle?.apply {
+                            set("lat", lat)
+                            set("lon", lon)
+                            set("city", city)
+                        }
+                        navController.navigate(ButtonBarScreen.Preview.route)
                     }
-                    navController.navigate(ButtonBarScreen.Preview.route)
                 },
                 onBack = {
                     navController.popBackStack()
@@ -102,32 +139,19 @@ fun ButtonNavGraph(
             )
         }
 
+        // Preview
         composable(route = ButtonBarScreen.Preview.route) {
-
             val lat = navController.previousBackStackEntry?.savedStateHandle?.get<Double>("lat")
             val lon = navController.previousBackStackEntry?.savedStateHandle?.get<Double>("lon")
             val city = navController.previousBackStackEntry?.savedStateHandle?.get<String>("city")
 
             if (lat != null && lon != null && city != null) {
-
                 val homeViewModel: HomeViewModel = viewModel(
-                    factory = HomeViewModel.HomeFactory(
-                        Repo.getInstance(
-                            WeatherRemoteDataSource(WeatherClient.weatherService),
-                            WeatherLocalDataSource(WeatherDataBase.getInstance(context).getDao())
-                        )
-                    )
+                    factory = HomeViewModel.HomeFactory(repo)
                 )
-
                 val favViewModel: FavViewModel = viewModel(
-                    factory = FavViewModel.FavFactory(
-                        Repo.getInstance(
-                            WeatherRemoteDataSource(WeatherClient.weatherService),
-                            WeatherLocalDataSource(WeatherDataBase.getInstance(context).getDao())
-                        )
-                    )
+                    factory = FavViewModel.FavFactory(repo)
                 )
-
                 PreviewScreen(
                     lat = lat,
                     lon = lon,

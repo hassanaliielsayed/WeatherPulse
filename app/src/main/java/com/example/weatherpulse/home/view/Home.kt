@@ -36,6 +36,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,36 +61,40 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
-
     val context = LocalContext.current
-
-    val addressState: MutableState<String> = remember { mutableStateOf("") }
+    val addressState = remember { mutableStateOf("") }
+    val weatherState by viewModel.mutableCurrentWeather.collectAsStateWithLifecycle()
+    var unitSystem by remember { mutableStateOf("metric") }
 
     LaunchedEffect(location.value) {
-        Log.i("asd --> ", "HomeScreen: launched effect")
         location.value?.let {
-            viewModel.getCurrentWeather(it)
-            addressState.value = getAddressDetails(it, context)
+            val unit = viewModel.getSavedUnitSystem()
+            unitSystem = unit
+            viewModel.getCurrentWeather(it, unit)
         }
-
     }
 
-    val weatherState by viewModel.mutableCurrentWeather.collectAsStateWithLifecycle()
-
     when (weatherState) {
-        is Result.Error -> {
-            ErrorScreen("Error")
-        }
-
-        Result.Loading -> {
-            LoadingScreen()
-        }
-
+        is Result.Error -> ErrorScreen("Error")
+        Result.Loading -> LoadingScreen()
         is Result.Success -> {
             val currentState = (weatherState as Result.Success).data
 
+            LaunchedEffect(Unit) {
+                addressState.value = location.value?.let { getAddressDetails(it, context) }
+                    ?: viewModel.getSavedCity() ?: "Unknown"
+            }
+
             val sunrise = currentState.current.sunrise.toLong().toFormatted()
             val sunset = currentState.current.sunset.toLong().toFormatted()
+
+            val tempUnit = when (unitSystem) {
+                "imperial" -> "°F"
+                "standard" -> "K"
+                else -> "°C"
+            }
+
+            val windUnit = if (unitSystem == "imperial") "mph" else "m/s"
 
             Column(
                 modifier = Modifier
@@ -101,65 +106,73 @@ fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
             ) {
                 SearchBar(addressState.value)
                 Spacer(modifier = Modifier.height(16.dp))
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = "${currentState.current.temp.toInt()}°",
-                        fontSize = 64.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = currentState.current.weather.get(0).description, fontSize = 20.sp)
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text("${currentState.current.temp.toInt()}$tempUnit", fontSize = 64.sp, fontWeight = FontWeight.Bold)
+                    Text(currentState.current.weather[0].description, fontSize = 20.sp)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "\uD83C\uDF07 Sunset $sunset         \uD83C\uDF05 Sunrise $sunrise",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Feels like ${currentState.current.feels_like.toInt()}°",
-                        fontSize = 16.sp
-                    )
+                    Text("🌇 Sunset $sunset         🌅 Sunrise $sunrise", fontSize = 16.sp)
+                    Text("Feels like ${currentState.current.feels_like.toInt()}$tempUnit", fontSize = 16.sp)
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
-                Row(
+
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .padding(vertical = 8.dp)
                 ) {
-                    MetricItem("Pressure", "${currentState.current.pressure} hPa")
-                    MetricItem("Wind", "${currentState.current.wind_speed} m/s")
-                    MetricItem("Humidity", "${currentState.current.humidity}%")
-                    MetricItem("UV", "${currentState.current.uvi}")
-                    MetricItem("Clouds", "${currentState.current.clouds}%")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Text("   🧭 Pressure", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("      💨 Wind", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("      💧 Humidity", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("  ☀️ UV", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("☁️ Clouds", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
 
-                    Text(text = "Hourly forecast", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Text("${currentState.current.pressure} hPa", fontSize = 14.sp)
+                        Text("${currentState.current.wind_speed} $windUnit", fontSize = 14.sp)
+                        Text("      ${currentState.current.humidity}%", fontSize = 14.sp)
+                        Text("   ${currentState.current.uvi}", fontSize = 14.sp)
+                        Text("  ${currentState.current.clouds}%", fontSize = 14.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column {
+                    Text("Hourly forecast", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow {
-                        items(currentState.hourly.size) { index ->  // Replace with your actual data list
+                        items(currentState.hourly.size - 24) { index ->
                             val hour = currentState.hourly[index]
-
                             WeatherCard(
                                 time = hour.dt.toLong().toFormatted(),
                                 icon = painterResource(getWeatherIconRes(hour.weather[0].icon)),
-                                temp = "${hour.temp.toInt()} °"
-
+                                temp = "${hour.temp.toInt()} $tempUnit"
                             )
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                SevenDayForecast(dailyForecast = currentState.daily)
-            }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column {
+                    SevenDayForecast(dailyForecast = currentState.daily, tempUnit = tempUnit)
+                }
+            }
         }
     }
-
-
 }
 
 fun getWeatherIconRes(iconCode: String?): Int {
@@ -196,20 +209,23 @@ fun getAddressDetails(location: Location, context: Context): String {
 
 }
 
+fun getAddressDetails(lat: Double, long: Double, context: Context): String {
+
+    val geocoder = Geocoder(context, Locale.getDefault())
+    val addresses = geocoder.getFromLocation(lat, long, 1)
+    if (!addresses.isNullOrEmpty()) {
+        val address = addresses[0]
+        return "${address.locality}, ${address.adminArea}, ${address.countryName}"
+    } else {
+        return "Unknown Address"
+    }
+}
+
 
 fun Long.toFormatted(pattern: String = "hh:mm a"): String {
 
     val sdf = SimpleDateFormat(pattern, Locale.getDefault())
     return sdf.format(Date(this * 1000))
-}
-
-
-@Composable
-fun MetricItem(title: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = title, style = MaterialTheme.typography.labelSmall)
-        Text(text = value, style = MaterialTheme.typography.bodyMedium)
-    }
 }
 
 @Composable
@@ -220,11 +236,13 @@ fun WeatherCard(time: String, temp: String, icon: Painter) {
             .size(90.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White, // Background color
-            //contentColor = Color.Black  // Text/icon color (for contrast)
+
         )
     ) {
         Column(
-            modifier = Modifier.padding(8.dp).fillMaxSize(),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = temp, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -282,10 +300,9 @@ fun ErrorScreen(errorMessage: String) {
         )
     }
 }
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SevenDayForecast(dailyForecast: List<Daily>) {
+fun SevenDayForecast(dailyForecast: List<Daily>, tempUnit: String) {
 
     val forecastToShow = if (dailyForecast.isNotEmpty() && dailyForecast[0].dt.toLong().isToday()) {
         dailyForecast
@@ -304,25 +321,16 @@ fun SevenDayForecast(dailyForecast: List<Daily>) {
         )
 
         LazyColumn(
-            modifier = Modifier
-                .height(600.dp),
+            modifier = Modifier.height(600.dp),
             userScrollEnabled = false
         ) {
             items(forecastToShow) { day ->
-                val dayName = when {
-                    day.dt.toLong().isToday() -> "Today"
-                    else -> day.dt.toLong().toDayOfWeek()
-                }
-
-                val dateStr = if (day.dt.toLong().isToday()) {
-                    dayName
-                } else {
-                    "$dayName, ${day.dt.toLong().toFormatted("MMM dd")}"
-                }
+                val dayName = if (day.dt.toLong().isToday()) "Today" else day.dt.toLong().toDayOfWeek()
+                val dateStr = if (day.dt.toLong().isToday()) dayName else "$dayName, ${day.dt.toLong().toFormatted("MMM dd")}"
 
                 ForecastItem(
                     day = dateStr,
-                    temp = "${day.temp.day.toInt()}°/${day.temp.night.toInt()}°",
+                    temp = "${day.temp.day.toInt()}$tempUnit/${day.temp.night.toInt()}$tempUnit",
                     icon = painterResource(getWeatherIconRes(day.weather[0].icon)),
                     isToday = day.dt.toLong().isToday()
                 )
