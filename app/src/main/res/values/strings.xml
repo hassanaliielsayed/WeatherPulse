@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherPulse</string>
+    <string name="title_activity_alarm_dialog">AlarmDialogActivity</string>
 </resources>

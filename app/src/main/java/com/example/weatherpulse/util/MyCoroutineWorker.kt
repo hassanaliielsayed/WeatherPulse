@@ -1,9 +1,11 @@
 package com.example.weatherpulse.util
 
 import android.content.Context
+import android.content.Intent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.weatherpulse.R
+import com.example.weatherpulse.alarm.view.AlarmDialogActivity
 import com.example.weatherpulse.local.WeatherLocalDataSource
 import com.example.weatherpulse.local.db.WeatherDataBase
 import com.example.weatherpulse.local.sharedpref.SharedPref
@@ -56,15 +58,15 @@ class MyCoroutineWorker(private val context: Context, parameters: WorkerParamete
             }
 
             if (alarm.type == Constants.AlarmType.ALARM) {
-                /*if (Settings.canDrawOverlays(context)) {
-                    withContext(Dispatchers.Main) {
-                        val intent = Intent(context, DialogActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        intent.putExtra(DESCRIPTION, description)
-                        intent.putExtra(ICON, icon)
-                        context.startActivity(intent)
+                withContext(Dispatchers.Main) {
+                    val intent = Intent(context, AlarmDialogActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        putExtra("ALARM_TITLE", context.getString(R.string.app_name))
+                        putExtra("ALARM_CITY", alarm.city)
+                        putExtra("ALARM_DESC", weatherDetailsResponse.current.weather[0].description)
                     }
-                }*/
+                    context.startActivity(intent)
+                }
             }
 
             WorkRequestManager.createWorkRequest(
