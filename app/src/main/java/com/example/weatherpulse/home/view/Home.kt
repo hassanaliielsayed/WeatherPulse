@@ -4,7 +4,6 @@ import android.content.Context
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,9 +48,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.weatherpulse.R
 import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.model.Daily
+import com.example.weatherpulse.model.WeatherDetailsResponse
+import com.example.weatherpulse.util.Constants.ZERO
+import com.example.weatherpulse.util.Constants.getWeatherIconRes
 import com.example.weatherpulse.util.Result
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -60,17 +61,25 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    location: MutableState<Location?>,
+    weatherResponse: WeatherDetailsResponse? = null,
+) {
     val context = LocalContext.current
     val addressState = remember { mutableStateOf("") }
     val weatherState by viewModel.mutableCurrentWeather.collectAsStateWithLifecycle()
     var unitSystem by remember { mutableStateOf("metric") }
 
     LaunchedEffect(location.value) {
-        location.value?.let {
-            val unit = viewModel.getSavedUnitSystem()
-            unitSystem = unit
-            viewModel.getCurrentWeather(it, unit)
+        weatherResponse?.let {
+            viewModel.setNotificationWeatherData(weatherResponse)
+        } ?: run {
+            location.value?.let {
+                val unit = viewModel.getSavedUnitSystem()
+                unitSystem = unit
+                viewModel.getCurrentWeather(it, unit)
+            }
         }
     }
 
@@ -109,11 +118,18 @@ fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text("${currentState.current.temp.toInt()}$tempUnit", fontSize = 64.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "${currentState.current.temp.toInt()}$tempUnit",
+                        fontSize = 64.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                     Text(currentState.current.weather[0].description, fontSize = 20.sp)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("🌇 Sunset $sunset         🌅 Sunrise $sunrise", fontSize = 16.sp)
-                    Text("Feels like ${currentState.current.feels_like.toInt()}$tempUnit", fontSize = 16.sp)
+                    Text(
+                        "Feels like ${currentState.current.feels_like.toInt()}$tempUnit",
+                        fontSize = 16.sp
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -158,7 +174,7 @@ fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
                             val hour = currentState.hourly[index]
                             WeatherCard(
                                 time = hour.dt.toLong().toFormatted(),
-                                icon = painterResource(getWeatherIconRes(hour.weather[0].icon)),
+                                icon = painterResource(getWeatherIconRes(hour.weather[ZERO].icon)),
                                 temp = "${hour.temp.toInt()} $tempUnit"
                             )
                         }
@@ -174,25 +190,6 @@ fun HomeScreen(viewModel: HomeViewModel, location: MutableState<Location?>) {
         }
     }
 }
-
-fun getWeatherIconRes(iconCode: String?): Int {
-    return when (iconCode) {
-
-        "01d"-> R.drawable.sunny
-        "01n"-> R.drawable.clear_sky_night
-        "02d"-> R.drawable.cloudy_sunny
-        "02n"-> R.drawable.cloudmoon
-        "03d","03n","04d","04n"-> R.drawable.clouds
-        "09d","9n","10d","10n"-> R.drawable.rainy_new
-        "13d","13n"-> R.drawable.snow_new
-        "11d","11n"-> R.drawable.thunderstorms
-        "50d","50n"-> R.drawable.storm
-        else -> R.drawable.sunny
-
-
-    }
-}
-
 
 fun getAddressDetails(location: Location, context: Context): String {
 
@@ -300,6 +297,7 @@ fun ErrorScreen(errorMessage: String) {
         )
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SevenDayForecast(dailyForecast: List<Daily>, tempUnit: String) {
@@ -325,8 +323,11 @@ fun SevenDayForecast(dailyForecast: List<Daily>, tempUnit: String) {
             userScrollEnabled = false
         ) {
             items(forecastToShow) { day ->
-                val dayName = if (day.dt.toLong().isToday()) "Today" else day.dt.toLong().toDayOfWeek()
-                val dateStr = if (day.dt.toLong().isToday()) dayName else "$dayName, ${day.dt.toLong().toFormatted("MMM dd")}"
+                val dayName =
+                    if (day.dt.toLong().isToday()) "Today" else day.dt.toLong().toDayOfWeek()
+                val dateStr = if (day.dt.toLong().isToday()) dayName else "$dayName, ${
+                    day.dt.toLong().toFormatted("MMM dd")
+                }"
 
                 ForecastItem(
                     day = dateStr,

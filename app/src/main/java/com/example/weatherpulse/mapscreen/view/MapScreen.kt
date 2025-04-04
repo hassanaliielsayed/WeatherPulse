@@ -77,7 +77,6 @@ fun MapScreen(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
 
-            // Map View
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
@@ -107,7 +106,6 @@ fun MapScreen(
                         map.overlays.add(locationOverlay)
                     }
 
-                    // Manual tap to pick location
                     val receiver = object : MapEventsReceiver {
                         override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                             p?.let { point ->
@@ -124,15 +122,17 @@ fun MapScreen(
                                 map.invalidate()
 
                                 val geocoder = Geocoder(ctx, Locale.getDefault())
-                                selectedCity = try {
-                                    geocoder.getFromLocation(
-                                        point.latitude,
-                                        point.longitude,
-                                        1
-                                    )?.firstOrNull()?.locality ?: "Selected"
-                                } catch (e: Exception) {
-                                    "Selected"
-                                }
+                                val address = try {
+                                    geocoder.getFromLocation(point.latitude, point.longitude, 1)?.firstOrNull()
+                                } catch (e: Exception) { null }
+
+                                selectedCity = listOfNotNull(
+                                    address?.locality,
+                                    address?.adminArea,
+                                    address?.countryName
+                                ).filter { it.isNotBlank() && it.lowercase() != "null" }
+                                    .joinToString(", ")
+                                    .ifBlank { "Unknown" }
                             }
                             return true
                         }
@@ -148,7 +148,6 @@ fun MapScreen(
                 }
             )
 
-            // Search Input and Icon
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -159,8 +158,8 @@ fun MapScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    label = { Text("Search city", color = Color.Black) }, // label color
-                    textStyle = LocalTextStyle.current.copy(color = Color.Black), // input text color
+                    label = { Text("Search city", color = Color.Black) },
+                    textStyle = LocalTextStyle.current.copy(color = Color.Black),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Black,
                         unfocusedBorderColor = Color.Black,
@@ -222,16 +221,28 @@ fun MapScreen(
                         }
                     )
                 }) {
-                    Icon(Icons.Default.Search, contentDescription = "Search" , tint = Color.Black)
-
+                    Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Black)
                 }
             }
 
-
-            // Confirm button
             Button(
                 onClick = {
-                    selectedPoint?.let { onLocationSelected(it.latitude, it.longitude, selectedCity) }
+                    selectedPoint?.let { point ->
+                        val geocoder = Geocoder(context, Locale.getDefault())
+                        val address = try {
+                            geocoder.getFromLocation(point.latitude, point.longitude, 1)?.firstOrNull()
+                        } catch (e: Exception) { null }
+
+                        val city = listOfNotNull(
+                            address?.locality,
+                            address?.adminArea,
+                            address?.countryName
+                        ).filter { it.isNotBlank() && it.lowercase() != "null" }
+                            .joinToString(", ")
+                            .ifBlank { "Unknown" }
+
+                        onLocationSelected(point.latitude, point.longitude, city)
+                    }
                 },
                 enabled = selectedPoint != null,
                 modifier = Modifier
@@ -241,18 +252,21 @@ fun MapScreen(
             ) {
                 Text("Confirm Location")
             }
-            // City label at the bottom
-            Text(
-                text = "City: $selectedCity",
-                style = MaterialTheme.typography.labelLarge,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 80.dp)
-                    .background(Color.Black.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
 
+            if (!selectedCity.isNullOrBlank() &&
+                selectedCity != "No location selected" &&
+                selectedCity.lowercase() != "null") {
+                Text(
+                    text = "City: $selectedCity",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 80.dp)
+                        .background(Color.Black.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
         }
     }
 }
@@ -268,7 +282,13 @@ private fun performSearch(
         val result = geocoder.getFromLocationName(query, 1)?.firstOrNull()
         if (result != null) {
             val point = GeoPoint(result.latitude, result.longitude)
-            val name = result.locality ?: result.featureName ?: "Selected"
+            val name = listOfNotNull(
+                result.locality,
+                result.adminArea,
+                result.countryName
+            ).filter { it.isNotBlank() && it.lowercase() != "null" }
+                .joinToString(", ")
+                .ifBlank { "Selected" }
             onResult(point, name)
         } else {
             onNotFound()

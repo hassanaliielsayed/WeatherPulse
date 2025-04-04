@@ -1,5 +1,7 @@
 package com.example.weatherpulse.model
 
+import java.io.Serializable
+
 data class Current(
     val clouds: Int,
     val dew_point: Double,
@@ -15,4 +17,4 @@ data class Current(
     val weather: List<Weather>,
     val wind_deg: Int,
     val wind_speed: Double
-)
+): Serializable

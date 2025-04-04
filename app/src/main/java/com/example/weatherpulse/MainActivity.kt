@@ -24,7 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
+import com.example.weatherpulse.util.Constants.WEATHER_RESPONSE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -48,6 +50,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
 
+        val weatherResponse = intent.getSerializableExtra(WEATHER_RESPONSE) as? WeatherDetailsResponse
+
         setContent {
 
 
@@ -61,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 response.value = false
             }
             WeatherPulseTheme {
-                MainScreen(myLocation)
+                MainScreen(myLocation, weatherResponse)
             }
         }
     }

@@ -20,17 +20,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.weatherpulse.model.WeatherDetailsResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(myLocation: MutableState<Location?>) {
+fun MainScreen(myLocation: MutableState<Location?>, weatherResponse: WeatherDetailsResponse?) {
 
     val navController = rememberNavController()
     Scaffold (
         bottomBar = { ButtonBar(navController = navController) }
     ) {
-        ButtonNavGraph(navController = navController, myLocation)
+        ButtonNavGraph(navController = navController, myLocation, weatherResponse)
     }
 }
 

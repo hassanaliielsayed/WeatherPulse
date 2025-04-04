@@ -91,6 +91,11 @@ dependencies {
     // OSM Map
     implementation ("org.osmdroid:osmdroid-android:6.1.20")
 
+    //Work Manager
+    implementation ("androidx.work:work-runtime-ktx:2.10.0")
+
+
+
 
 
 }

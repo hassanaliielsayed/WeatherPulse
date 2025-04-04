@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -22,7 +23,10 @@ import com.example.weatherpulse.mapscreen.view.MapScreen
 import com.example.weatherpulse.remote.WeatherClient
 import com.example.weatherpulse.remote.WeatherRemoteDataSource
 import com.example.weatherpulse.repo.Repo
-import com.example.weatherpulse.screens.AlarmScreen
+import com.example.weatherpulse.alarm.view.AlarmScreen
+import com.example.weatherpulse.alarm.view.AddAlarmScreen
+import com.example.weatherpulse.alarm.viewmodel.AlarmViewModel
+import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.setting.view.SettingScreen
 import com.example.weatherpulse.setting.viewmodel.SettingViewModel
 import com.example.weatherpulse.util.PreviewScreen
@@ -32,7 +36,8 @@ import com.example.weatherpulse.util.SettingHelpers
 @Composable
 fun ButtonNavGraph(
     navController: NavHostController,
-    myLocation: MutableState<Location?>
+    myLocation: MutableState<Location?>,
+    weatherResponse: WeatherDetailsResponse?
 ) {
     val context = LocalContext.current
 
@@ -53,7 +58,7 @@ fun ButtonNavGraph(
             val homeViewModel: HomeViewModel = viewModel(
                 factory = HomeViewModel.HomeFactory(repo)
             )
-            HomeScreen(homeViewModel, myLocation)
+            HomeScreen(homeViewModel, myLocation, weatherResponse)
         }
 
         // Favorites
@@ -79,7 +84,15 @@ fun ButtonNavGraph(
 
         // Alarms
         composable(route = ButtonBarScreen.Alarm.route) {
-            AlarmScreen()
+            val alarmViewModel: AlarmViewModel = viewModel(
+                factory = AlarmViewModel.AlarmFactory(repo)
+            )
+            AlarmScreen(
+                viewModel = alarmViewModel,
+                onPickTime = {
+                    navController.navigate("MapScreen?source=alarm")
+                }
+            )
         }
 
         // Settings
@@ -115,27 +128,58 @@ fun ButtonNavGraph(
 
             MapScreen(
                 onLocationSelected = { lat, lon, city ->
-                    if (source == "settings") {
-                        val sharedPref = SharedPref.getInstance(context)
-                        sharedPref.setLat(lat)
-                        sharedPref.setLon(lon)
-                        sharedPref.setCity(city)
+                    when (source) {
+                        "settings" -> {
+                            val sharedPref = SharedPref.getInstance(context)
+                            sharedPref.setLat(lat)
+                            sharedPref.setLon(lon)
+                            sharedPref.setCity(city)
 
-                        navController.navigate(ButtonBarScreen.Home.route) {
-                            popUpTo(ButtonBarScreen.Setting.route) { inclusive = true }
+                            navController.navigate(ButtonBarScreen.Home.route) {
+                                popUpTo(ButtonBarScreen.Setting.route) { inclusive = true }
+                            }
                         }
-                    } else {
-                        navController.currentBackStackEntry?.savedStateHandle?.apply {
-                            set("lat", lat)
-                            set("lon", lon)
-                            set("city", city)
+                        "alarm" -> {
+                            navController.navigate("add_alarm_screen?lat=$lat&lon=$lon&city=$city")
                         }
-                        navController.navigate(ButtonBarScreen.Preview.route)
+                        else -> {
+                            navController.currentBackStackEntry?.savedStateHandle?.apply {
+                                set("lat", lat)
+                                set("lon", lon)
+                                set("city", city)
+                            }
+                            navController.navigate(ButtonBarScreen.Preview.route)
+                        }
                     }
                 },
                 onBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        // Add Alarm Screen
+        composable(
+            route = "add_alarm_screen?lat={lat}&lon={lon}&city={city}",
+            arguments = listOf(
+                navArgument("lat") { type = NavType.FloatType },
+                navArgument("lon") { type = NavType.FloatType },
+                navArgument("city") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val lat = backStackEntry.arguments?.getFloat("lat")?.toDouble() ?: 0.0
+            val lon = backStackEntry.arguments?.getFloat("lon")?.toDouble() ?: 0.0
+            val city = backStackEntry.arguments?.getString("city") ?: ""
+            val alarmViewModel: AlarmViewModel = viewModel(
+                factory = AlarmViewModel.AlarmFactory(repo)
+            )
+
+            AddAlarmScreen(
+                navController = navController,
+                lat = lat,
+                lon = lon,
+                city = city,
+                viewModel = alarmViewModel
             )
         }
 

@@ -1,6 +1,6 @@
 package com.example.weatherpulse.remote
 
-import android.location.Location
+import com.example.weatherpulse.model.Location
 import com.example.weatherpulse.model.WeatherDetailsResponse
 
 class WeatherRemoteDataSource(private val service: WeatherService): WeatherRemoteDataSourceInterface {
