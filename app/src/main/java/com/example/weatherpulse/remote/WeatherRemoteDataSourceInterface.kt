@@ -1,8 +1,7 @@
 package com.example.weatherpulse.remote
 
-import android.location.Location
+import com.example.weatherpulse.model.Location
 import com.example.weatherpulse.model.WeatherDetailsResponse
-import retrofit2.http.Query
 
 interface WeatherRemoteDataSourceInterface {
 

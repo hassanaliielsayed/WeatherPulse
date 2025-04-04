@@ -1,16 +1,45 @@
-package com.example.weatherpulse.favourite.view
+package com.example.weatherpulse.alarm.view
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -18,41 +47,41 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.weatherpulse.favourite.viewmodel.FavViewModel
-import com.example.weatherpulse.model.FavouritePlacesPojo
-import com.example.weatherpulse.model.LocationKey
+import com.example.weatherpulse.alarm.viewmodel.AlarmViewModel
+import com.example.weatherpulse.model.Alarm
+import com.example.weatherpulse.util.Constants.AlarmType
 import com.example.weatherpulse.util.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoriteScreen(
-    viewModel: FavViewModel,
-    onPickLocation: () -> Unit,
-    onCityClick: (locationKey: LocationKey, cityName: String) -> Unit
+fun AlarmScreen(
+    viewModel: AlarmViewModel,
+    onPickTime: () -> Unit,
 ) {
 
+    val snackBarHostState = remember { SnackbarHostState() }
+    val state by viewModel.mutableAlarms.collectAsStateWithLifecycle()
+    var deletedAlarmForUndo by remember { mutableStateOf<Alarm?>(null) }
+
     LaunchedEffect(Unit) {
-        viewModel.getAllLocations()
+        viewModel.getAllAlarms()
     }
 
-    val state by viewModel.mutableLocations.collectAsStateWithLifecycle()
-    val snackBarHostState = remember { SnackbarHostState() }
-    var deletedLocationForUndo by remember { mutableStateOf<FavouritePlacesPojo?>(null) }
-
-    LaunchedEffect(deletedLocationForUndo) {
-        deletedLocationForUndo?.let {
+    LaunchedEffect(deletedAlarmForUndo) {
+        deletedAlarmForUndo?.let {
             val result = snackBarHostState.showSnackbar(
-                message = "${it.locationKey} removed",
+                message = "${it.id} removed",
                 actionLabel = "Undo",
                 duration = SnackbarDuration.Short,
                 withDismissAction = true
             )
             if (result == SnackbarResult.ActionPerformed) {
-                viewModel.insertLocation(it)
+                viewModel.insertAlarm(it)
             }
-            deletedLocationForUndo = null
+            deletedAlarmForUndo = null
         }
     }
 
@@ -66,7 +95,7 @@ fun FavoriteScreen(
             ) {
                 FloatingActionButton(
                     modifier = Modifier.offset(y = 2.dp),
-                    onClick = onPickLocation,
+                    onClick = onPickTime,
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.Place, contentDescription = "Pick location to add")
@@ -87,7 +116,7 @@ fun FavoriteScreen(
                 .background(Color(0xFFB3E5FC))
         ) {
             val favorites = if (state is Result.Success<*>) {
-                (state as Result.Success<List<FavouritePlacesPojo>>).data
+                (state as Result.Success<List<Alarm>>).data
             } else emptyList()
 
             Box(
@@ -113,21 +142,19 @@ fun FavoriteScreen(
                             items(
                                 count = favorites.size,
                                 key = {
-                                    // convert to String
-                                    val loc = favorites[it].locationKey
-                                    "${loc.lat},${loc.long}"
+                                    favorites[it].id ?: it.toLong()
                                 }
                             ) { index ->
-                                val favLocation = favorites[index]
+                                val favAlarm = favorites[index]
                                 val dismissState = rememberSwipeToDismissBoxState(
                                     initialValue = SwipeToDismissBoxValue.Settled
                                 )
-                                val currentLocation by rememberUpdatedState(favLocation)
+                                val currentAlarm by rememberUpdatedState(favAlarm)
 
                                 LaunchedEffect(dismissState.currentValue) {
                                     if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-                                        viewModel.deleteLocation(currentLocation)
-                                        deletedLocationForUndo = currentLocation
+                                        viewModel.deleteAlarm(currentAlarm)
+                                        deletedAlarmForUndo = currentAlarm
                                         dismissState.snapTo(SwipeToDismissBoxValue.Settled)
                                     }
                                 }
@@ -139,16 +166,10 @@ fun FavoriteScreen(
                                     backgroundContent = {},
                                     content = {
                                         FancyCityCard(
-                                            location = favLocation,
-                                            onClick = {
-                                                onCityClick(
-                                                    favLocation.locationKey,
-                                                    favLocation.countryName
-                                                )
-                                            },
+                                            alarm = favAlarm,
                                             onDelete = {
-                                                deletedLocationForUndo = favLocation
-                                                viewModel.deleteLocation(favLocation)
+                                                deletedAlarmForUndo = favAlarm
+                                                viewModel.deleteAlarm(favAlarm)
                                             }
                                         )
                                     }
@@ -164,8 +185,7 @@ fun FavoriteScreen(
 
 @Composable
 private fun FancyCityCard(
-    location: FavouritePlacesPojo,
-    onClick: () -> Unit,
+    alarm: Alarm,
     onDelete: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -196,13 +216,21 @@ private fun FancyCityCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = location.countryName,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .clickable(onClick = onClick)
-                    .weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = alarm.city,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = formatTime(alarm.time),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = alarm.type.name.capitalize(Locale.getDefault()),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (alarm.type == AlarmType.ALARM) Color.Red else Color(0xFF1976D2)
+                )
+            }
             IconButton(
                 onClick = {
                     animateDelete = true
@@ -224,4 +252,9 @@ private fun FancyCityCard(
             }
         }
     }
+}
+
+fun formatTime(millis: Long): String {
+    val formatter = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+    return formatter.format(java.util.Date(millis))
 }
