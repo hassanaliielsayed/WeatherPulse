@@ -35,6 +35,8 @@ fun AddAlarmScreen(
 
     var calendar: Calendar? by remember { mutableStateOf(null) }
 
+    var showPastTimeError by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,14 +60,21 @@ fun AddAlarmScreen(
                             date.set(Calendar.HOUR_OF_DAY, hourOfDay)
                             date.set(Calendar.MINUTE, minute)
 
-                            calendar = date
-                            time = String.format("%02d:%02d", hourOfDay, minute)
+                            if (date.timeInMillis <= System.currentTimeMillis()) {
+                                showPastTimeError = true
+                                time = "Select Time"
+                                calendar = null
+                            } else {
+                                showPastTimeError = false
+                                calendar = date
+                                time = String.format("%02d:%02d", hourOfDay, minute)
+                            }
 
-                            Log.d("asd --> ", "AddAlarmScreen: calendar = ${(calendar as Calendar).time}")
-                            Log.d("asd --> ", "AddAlarmScreen: calendar = ${(calendar as Calendar).timeInMillis}")
-                            Log.d("asd --> ", "AddAlarmScreen: longitude = $lon")
-                            Log.d("asd --> ", "AddAlarmScreen: latitude = $lat")
-                            Log.d("asd --> ", "AddAlarmScreen: city = $city")
+//                            Log.d("asd --> ", "AddAlarmScreen: calendar = ${(calendar as Calendar).time}")
+//                            Log.d("asd --> ", "AddAlarmScreen: calendar = ${(calendar as Calendar).timeInMillis}")
+//                            Log.d("asd --> ", "AddAlarmScreen: longitude = $lon")
+//                            Log.d("asd --> ", "AddAlarmScreen: latitude = $lat")
+//                            Log.d("asd --> ", "AddAlarmScreen: city = $city")
                         },
                         currentDate[Calendar.HOUR_OF_DAY],
                         currentDate[Calendar.MINUTE],
@@ -81,6 +90,16 @@ fun AddAlarmScreen(
         }) {
             Text(text = time)
         }
+
+        if (showPastTimeError) {
+            Text(
+                text = "Please select a future time",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
