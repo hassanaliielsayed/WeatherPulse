@@ -206,19 +206,6 @@ fun getAddressDetails(location: Location, context: Context): String {
 
 }
 
-fun getAddressDetails(lat: Double, long: Double, context: Context): String {
-
-    val geocoder = Geocoder(context, Locale.getDefault())
-    val addresses = geocoder.getFromLocation(lat, long, 1)
-    if (!addresses.isNullOrEmpty()) {
-        val address = addresses[0]
-        return "${address.locality}, ${address.adminArea}, ${address.countryName}"
-    } else {
-        return "Unknown Address"
-    }
-}
-
-
 fun Long.toFormatted(pattern: String = "hh:mm a"): String {
 
     val sdf = SimpleDateFormat(pattern, Locale.getDefault())
@@ -243,7 +230,7 @@ fun WeatherCard(time: String, temp: String, icon: Painter) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = temp, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Icon(icon, null, tint = Color.Unspecified)
+            Icon(icon, null, tint = Color.Unspecified, modifier = Modifier.size(24.dp))
             Text(text = time, fontSize = 14.sp, textAlign = TextAlign.Center)
         }
     }
