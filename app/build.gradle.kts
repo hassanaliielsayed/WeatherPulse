@@ -94,6 +94,11 @@ dependencies {
     //Work Manager
     implementation ("androidx.work:work-runtime-ktx:2.10.0")
 
+    //MockK
+    testImplementation ("io.mockk:mockk-android:1.13.17")
+    testImplementation ("io.mockk:mockk-agent:1.13.17")
+    implementation ("org.jetbrains.kotlin:kotlin-test:2.0.0")
+
 
 
 
