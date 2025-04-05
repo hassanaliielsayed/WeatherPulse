@@ -24,7 +24,7 @@ class FavViewModel(private val repo: WeatherRepo): ViewModel() {
 
     fun getAllLocations() {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
 
             repo.getAllLocations()
                 .catch {
@@ -40,7 +40,7 @@ class FavViewModel(private val repo: WeatherRepo): ViewModel() {
 
         if (location != null){
 
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
 
                 try {
                     val result = repo.insertLocation(location)
@@ -62,12 +62,16 @@ class FavViewModel(private val repo: WeatherRepo): ViewModel() {
 
     fun deleteLocation(location: FavouritePlacesPojo?){
         if (location != null){
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch{
                 try {
-                    repo.deleteLocation(location)
-                    _message.value = Result.Success("Removed Successfully")
+                    val result = repo.deleteLocation(location)
+                    if (result > 0) {
+                        _message.value = Result.Success("Removed Successfully")
+                    } else {
+                        _message.value = Result.Error("Can't Remove Location")
+                    }
                 } catch (ex: Exception) {
-                    _message.value = Result.Error("Can't Remove Location ${ex.message.toString()}")
+                    _message.value = Result.Error("Unknown Error ${ex.message.toString()}")
                 }
             }
         } else {
