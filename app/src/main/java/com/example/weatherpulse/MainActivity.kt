@@ -24,6 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.weatherpulse.local.sharedpref.SharedPref
+import com.example.weatherpulse.ui.theme.WeatherPulseTheme
+import com.example.weatherpulse.util.LocaleUtils.setAppLocale
 import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
 import com.example.weatherpulse.util.Constants.WEATHER_RESPONSE
@@ -44,18 +47,19 @@ class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
+    override fun attachBaseContext(newBase: Context) {
+        val lang = SharedPref.getInstance(newBase).getLanguage()
+        val contextWithLocale = newBase.setAppLocale(lang)
+        super.attachBaseContext(contextWithLocale)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
 
         val weatherResponse = intent.getSerializableExtra(WEATHER_RESPONSE) as? WeatherDetailsResponse
 
         setContent {
-
-
-
             val response = remember { mutableStateOf(true) }
             installSplashScreen().setKeepOnScreenCondition {
                 response.value
@@ -79,7 +83,6 @@ class MainActivity : ComponentActivity() {
                 enableLocationServices()
             }
         } else {
-
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
@@ -87,37 +90,24 @@ class MainActivity : ComponentActivity() {
                     ACCESS_COARSE_LOCATION
                 ),
                 REQUEST_LOCATION_CODE
-
             )
         }
     }
 
-    private fun checkPermission(): Boolean{
-
-        var result = false
-        if ((ContextCompat.checkSelfPermission (this ,
-                ACCESS_COARSE_LOCATION ) == PackageManager. PERMISSION_GRANTED )
-            ||
-            (ContextCompat.checkSelfPermission(this ,
-                ACCESS_FINE_LOCATION
-            ) == PackageManager. PERMISSION_GRANTED ))
-            result = true
-        return result
+    private fun checkPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun isLocationEnable(): Boolean {
-
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     @SuppressLint("MissingPermission")
     private fun getFreshLocation() {
-        // getting entry point
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        // getting location
         fusedLocationProviderClient.requestLocationUpdates(
             getLocationRequest(),
             getLocationCallback(),
@@ -133,21 +123,16 @@ class MainActivity : ComponentActivity() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-
                 for (location in locationResult.locations) {
-                    if (location != null) {
-                        Log.d("asd --> ", "longitude = ${location.longitude}")
-                        Log.d("asd --> ", "latitude = ${location.latitude}")
-                        myLocation.value = location
+                    location?.let {
+                        Log.d("asd --> ", "longitude = ${it.longitude}")
+                        Log.d("asd --> ", "latitude = ${it.latitude}")
+                        myLocation.value = it
                         stopLocationUpdates()
                     }
                 }
-
-                //getAddressDetails(location.lastLocation?: Location(LocationManager.GPS_PROVIDER))
-
             }
         }
-
         return locationCallback
     }
 
@@ -155,19 +140,17 @@ class MainActivity : ComponentActivity() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    @Deprecated("Use Activity Result API instead")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d("```TAG```", "onRequestPermissionsResult: konck")
-        if (requestCode == REQUEST_LOCATION_CODE){
-            if (grantResults.get(0) == PackageManager.PERMISSION_GRANTED || grantResults.get(1) == PackageManager.PERMISSION_GRANTED){
-                if (isLocationEnable()){
+        if (requestCode == REQUEST_LOCATION_CODE) {
+            if (grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED || grantResults.getOrNull(1) == PackageManager.PERMISSION_GRANTED) {
+                if (isLocationEnable()) {
                     getFreshLocation()
-                    Log.d("```TAG```", "onRequestPermissionsResult: true")
                 } else {
                     enableLocationServices()
                 }
@@ -179,15 +162,12 @@ class MainActivity : ComponentActivity() {
                         ACCESS_COARSE_LOCATION
                     ),
                     REQUEST_LOCATION_CODE
-
                 )
             }
-
         }
     }
 
     private fun enableLocationServices() {
-
         Toast.makeText(this, "Please Turn on Location", Toast.LENGTH_LONG).show()
         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     }
@@ -207,4 +187,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

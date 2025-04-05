@@ -18,7 +18,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.weatherpulse.R
 import com.example.weatherpulse.setting.viewmodel.SettingViewModel
 
 @Composable
@@ -47,7 +49,7 @@ fun SettingScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Language")
+            Text(stringResource(R.string.language))
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
@@ -57,7 +59,7 @@ fun SettingScreen(
                             onRecreateActivity()
                         }
                     )
-                    Text("Device Language")
+                    Text(stringResource(R.string.device_language))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
@@ -67,7 +69,7 @@ fun SettingScreen(
                             onRecreateActivity()
                         }
                     )
-                    Text("English")
+                    Text(stringResource(R.string.english))
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
@@ -77,12 +79,12 @@ fun SettingScreen(
                             onRecreateActivity()
                         }
                     )
-                    Text("Arabic")
+                    Text(stringResource(R.string.arabic))
                 }
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Measurement System")
+            Text(stringResource(R.string.measurement_system))
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
@@ -90,8 +92,8 @@ fun SettingScreen(
                         onClick = { viewModel.setUnitSystem("metric") }
                     )
                     Column {
-                        Text("Metric")
-                        Text("Temp: °C, Wind: m/s", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.metric))
+                        Text(stringResource(R.string.temp_c_wind_m_s), style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -100,8 +102,8 @@ fun SettingScreen(
                         onClick = { viewModel.setUnitSystem("imperial") }
                     )
                     Column {
-                        Text("Imperial")
-                        Text("Temp: °F, Wind: mph", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.imperial))
+                        Text(stringResource(R.string.temp_f_wind_mph), style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,14 +112,14 @@ fun SettingScreen(
                         onClick = { viewModel.setUnitSystem("standard") }
                     )
                     Column {
-                        Text("Standard")
-                        Text("Temp: K, Wind: m/s", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.standard))
+                        Text(stringResource(R.string.temp_k_wind_m_s), style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Location Source")
+            Text(stringResource(R.string.location_source))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = locationSource == "gps",
@@ -127,7 +129,7 @@ fun SettingScreen(
                         onRequestLocationEnable()
                     }
                 )
-                Text("GPS")
+                Text(stringResource(R.string.gps))
 
                 RadioButton(
                     selected = locationSource == "map",
@@ -136,7 +138,7 @@ fun SettingScreen(
                         onRequestMapPicker()
                     }
                 )
-                Text("Map Picker")
+                Text(stringResource(R.string.map_picker))
             }
         }
     }

@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">WeatherPulse</string>
+    <string name="language">Language</string>
+    <string name="device_language">Device Language</string>
+    <string name="english">English</string>
+    <string name="arabic">Arabic</string>
+    <string name="measurement_system">Measurement System</string>
+    <string name="metric">Metric</string>
+    <string name="temp_c_wind_m_s">Temp: °C, Wind: m/s</string>
+    <string name="imperial">Imperial</string>
+    <string name="temp_f_wind_mph">Temp: °F, Wind: mph</string>
+    <string name="standard">Standard</string>
+    <string name="temp_k_wind_m_s">Temp: K, Wind: m/s</string>
+    <string name="location_source">Location Source</string>
+    <string name="gps">GPS</string>
+    <string name="map_picker">Map Picker</string>
     <string name="title_activity_alarm_dialog">AlarmDialogActivity</string>
 </resources>
