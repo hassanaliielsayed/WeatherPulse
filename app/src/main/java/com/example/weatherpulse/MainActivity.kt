@@ -29,6 +29,7 @@ import com.example.weatherpulse.ui.theme.WeatherPulseTheme
 import com.example.weatherpulse.util.LocaleUtils.setAppLocale
 import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
+import com.example.weatherpulse.util.ConnectionLiveData
 import com.example.weatherpulse.util.Constants.WEATHER_RESPONSE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
