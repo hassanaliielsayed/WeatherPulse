@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,11 +49,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.weatherpulse.R
 import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.model.Daily
 import com.example.weatherpulse.model.WeatherDetailsResponse
+import com.example.weatherpulse.util.ConnectionLiveData
 import com.example.weatherpulse.util.Constants.ZERO
 import com.example.weatherpulse.util.Constants.getWeatherIconRes
 import com.example.weatherpulse.util.Result
@@ -69,6 +73,7 @@ fun HomeScreen(
     weatherResponse: WeatherDetailsResponse? = null,
 ) {
     val context = LocalContext.current
+    val owner = LocalLifecycleOwner.current
     val addressState = remember { mutableStateOf("") }
     val weatherState by viewModel.mutableCurrentWeather.collectAsStateWithLifecycle()
     var unitSystem by remember { mutableStateOf("metric") }
@@ -78,9 +83,18 @@ fun HomeScreen(
             viewModel.setNotificationWeatherData(weatherResponse)
         } ?: run {
             location.value?.let {
+
                 val unit = viewModel.getSavedUnitSystem()
                 unitSystem = unit
-                viewModel.getCurrentWeather(it, unit)
+                ConnectionLiveData(context).observe(owner,  { isNetworkAvailable ->
+                    if (isNetworkAvailable){
+                        viewModel.getCurrentWeather(it, unit)
+                    } else {
+                        Toast.makeText(context, "No Internet", Toast.LENGTH_LONG).show()
+                    }
+
+                })
+
             }
         }
     }
