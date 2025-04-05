@@ -1,4 +1,4 @@
-package com.example.weatherpulse.mapscreen.view
+package com.example.weatherpulse.util
 
 import android.Manifest
 import android.location.Geocoder

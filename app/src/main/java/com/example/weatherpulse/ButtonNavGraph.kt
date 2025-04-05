@@ -19,7 +19,7 @@ import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.local.db.WeatherDataBase
 import com.example.weatherpulse.local.WeatherLocalDataSource
 import com.example.weatherpulse.local.sharedpref.SharedPref
-import com.example.weatherpulse.mapscreen.view.MapScreen
+import com.example.weatherpulse.util.MapScreen
 import com.example.weatherpulse.remote.WeatherClient
 import com.example.weatherpulse.remote.WeatherRemoteDataSource
 import com.example.weatherpulse.repo.Repo

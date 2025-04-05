@@ -33,7 +33,7 @@ object WorkRequestManager {
         val constraints: Constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED) // Network constraints
             .setRequiresBatteryNotLow(true) // Battery not low
-            .setRequiresDeviceIdle(true) // Device idle (API 23+)
+            //.setRequiresDeviceIdle(true) // Device idle (API 23+)
             .build()
 
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(MyCoroutineWorker::class.java)

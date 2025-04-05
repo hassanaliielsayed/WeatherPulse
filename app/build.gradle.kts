@@ -99,7 +99,6 @@ dependencies {
     testImplementation ("io.mockk:mockk-agent:1.13.17")
     implementation ("org.jetbrains.kotlin:kotlin-test:2.0.0")
 
-    // Add to build.gradle
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("org.mockito:mockito-core:4.6.1")

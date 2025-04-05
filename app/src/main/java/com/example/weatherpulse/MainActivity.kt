@@ -25,12 +25,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.weatherpulse.local.sharedpref.SharedPref
-import com.example.weatherpulse.ui.theme.WeatherPulseTheme
-import com.example.weatherpulse.util.LocaleUtils.setAppLocale
 import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
-import com.example.weatherpulse.util.ConnectionLiveData
 import com.example.weatherpulse.util.Constants.WEATHER_RESPONSE
+import com.example.weatherpulse.util.LocaleUtils.setAppLocale
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
