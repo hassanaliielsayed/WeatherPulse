@@ -2,8 +2,10 @@ package com.example.weatherpulse.util
 
 import android.content.Context
 import androidx.room.TypeConverter
+import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.weatherpulse.model.Alarm
@@ -14,6 +16,7 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+
 
 object WorkRequestManager {
 
@@ -27,9 +30,16 @@ object WorkRequestManager {
             .putLong(TIME_IN_MILLIS, timeInMillis)
             .build()
 
+        val constraints: Constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED) // Network constraints
+            .setRequiresBatteryNotLow(true) // Battery not low
+            .setRequiresDeviceIdle(true) // Device idle (API 23+)
+            .build()
+
         val oneTimeWorkRequest = OneTimeWorkRequest.Builder(MyCoroutineWorker::class.java)
             .setInitialDelay(timeInMillis - Calendar.getInstance().timeInMillis, TimeUnit.MILLISECONDS)
             .setInputData(data)
+            .setConstraints(constraints)
             .addTag(alarm.id.toString())
             .build()
 

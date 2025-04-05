@@ -1,6 +1,6 @@
 package com.example.weatherpulse.local
 
-import SharedPrefInterface
+import com.example.weatherpulse.local.sharedpref.SharedPrefInterface
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4

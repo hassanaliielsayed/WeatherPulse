@@ -1,6 +1,6 @@
 package com.example.weatherpulse.local
 
-import SharedPrefInterface
+import com.example.weatherpulse.local.sharedpref.SharedPrefInterface
 import com.example.weatherpulse.local.db.WeatherDao
 import com.example.weatherpulse.model.Alarm
 import com.example.weatherpulse.model.FavouritePlacesPojo
