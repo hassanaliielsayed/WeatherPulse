@@ -27,6 +27,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.weatherpulse.local.sharedpref.SharedPref
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
 import com.example.weatherpulse.util.LocaleUtils.setAppLocale
+import com.example.weatherpulse.model.WeatherDetailsResponse
+import com.example.weatherpulse.ui.theme.WeatherPulseTheme
+import com.example.weatherpulse.util.Constants.WEATHER_RESPONSE
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -54,6 +57,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val weatherResponse = intent.getSerializableExtra(WEATHER_RESPONSE) as? WeatherDetailsResponse
+
         setContent {
             val response = remember { mutableStateOf(true) }
             installSplashScreen().setKeepOnScreenCondition {
@@ -64,7 +69,7 @@ class MainActivity : ComponentActivity() {
                 response.value = false
             }
             WeatherPulseTheme {
-                MainScreen(myLocation)
+                MainScreen(myLocation, weatherResponse)
             }
         }
     }

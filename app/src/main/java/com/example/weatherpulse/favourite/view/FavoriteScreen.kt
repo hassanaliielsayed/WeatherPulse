@@ -38,12 +38,12 @@ fun FavoriteScreen(
     }
 
     val state by viewModel.mutableLocations.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     var deletedLocationForUndo by remember { mutableStateOf<FavouritePlacesPojo?>(null) }
 
     LaunchedEffect(deletedLocationForUndo) {
         deletedLocationForUndo?.let {
-            val result = snackbarHostState.showSnackbar(
+            val result = snackBarHostState.showSnackbar(
                 message = "${it.locationKey} removed",
                 actionLabel = "Undo",
                 duration = SnackbarDuration.Short,
@@ -73,7 +73,7 @@ fun FavoriteScreen(
                 }
 
                 SnackbarHost(
-                    hostState = snackbarHostState,
+                    hostState = snackBarHostState,
                     modifier = Modifier.padding(top = 12.dp)
                 )
             }

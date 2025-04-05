@@ -14,4 +14,5 @@
     <string name="location_source">Location Source</string>
     <string name="gps">GPS</string>
     <string name="map_picker">Map Picker</string>
+    <string name="title_activity_alarm_dialog">AlarmDialogActivity</string>
 </resources>

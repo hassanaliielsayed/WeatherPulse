@@ -1,10 +1,9 @@
 package com.example.weatherpulse.home.viewmodel
 
-import android.location.Location
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherpulse.model.Location
 import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.repo.WeatherRepo
 import com.example.weatherpulse.util.Result
@@ -22,8 +21,6 @@ class HomeViewModel(
 
     var positionLat = 0.0
     var positionLong = 0.0
-
-
 
     fun getCurrentWeather(deviceLocation: AndroidLocation?, unit: String) {
         viewModelScope.launch {
@@ -44,7 +41,7 @@ class HomeViewModel(
 
                 if (location != null) {
                     _mutableCurrentWeather.value = Result.Loading
-                    val response = repo.getCurrentWeather(location, unit)
+                    val response = repo.getCurrentWeather(Location(location.longitude, location.latitude), unit)
                     _mutableCurrentWeather.value = Result.Success(response)
                 } else {
                     _mutableCurrentWeather.value = Result.Error("Location not available")
@@ -53,6 +50,10 @@ class HomeViewModel(
                 _mutableCurrentWeather.value = Result.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun setNotificationWeatherData(weatherResponse: WeatherDetailsResponse) {
+        _mutableCurrentWeather.value = Result.Success(weatherResponse)
     }
 
     suspend fun getSavedUnitSystem(): String {

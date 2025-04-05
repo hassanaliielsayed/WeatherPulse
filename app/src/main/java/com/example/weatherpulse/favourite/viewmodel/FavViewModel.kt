@@ -36,8 +36,7 @@ class FavViewModel(private val repo: WeatherRepo): ViewModel() {
         }
     }
 
-     fun insertLocation(location: FavouritePlacesPojo?
-     ) {
+     fun insertLocation(location: FavouritePlacesPojo?) {
 
         if (location != null){
 

@@ -1,3 +1,5 @@
+import com.example.weatherpulse.util.Constants
+
 interface SharedPrefInterface {
     fun getLanguage(): String
     fun setLanguage(value: String)
@@ -16,4 +18,7 @@ interface SharedPrefInterface {
 
     fun getCity(): String
     fun setCity(city: String)
+
+    suspend fun setAlarmType(type: String)
+    suspend fun getAlarmType(): String
 }

@@ -3,6 +3,8 @@ package com.example.weatherpulse.local.sharedpref
 import SharedPrefInterface
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.weatherpulse.util.Constants
+import com.example.weatherpulse.util.Constants.EMPTY
 
 class SharedPref private constructor(context: Context): SharedPrefInterface {
 
@@ -38,4 +40,7 @@ class SharedPref private constructor(context: Context): SharedPrefInterface {
 
     override fun getCity(): String = sharedPref.getString("city", "") ?: ""
     override fun setCity(city: String) = sharedPref.edit().putString("city", city).apply()
+
+    override suspend fun setAlarmType(type: String) = sharedPref.edit().putString("alarmType", type).apply()
+    override suspend fun getAlarmType(): String = sharedPref.getString("alarmType", EMPTY) ?: EMPTY
 }

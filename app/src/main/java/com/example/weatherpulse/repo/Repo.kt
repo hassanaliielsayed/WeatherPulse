@@ -1,10 +1,12 @@
 package com.example.weatherpulse.repo
 
-import android.location.Location
 import com.example.weatherpulse.local.WeatherLocalDataSourceInterface
+import com.example.weatherpulse.model.Alarm
 import com.example.weatherpulse.model.FavouritePlacesPojo
+import com.example.weatherpulse.model.Location
 import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.remote.WeatherRemoteDataSourceInterface
+import com.example.weatherpulse.util.Constants
 import kotlinx.coroutines.flow.Flow
 
 class Repo(
@@ -28,6 +30,19 @@ class Repo(
 
     override suspend fun deleteLocation(location: FavouritePlacesPojo): Int {
         return localDataSource.deleteLocation(location)
+    }
+
+    override suspend fun getAllAlarms(): Flow<List<Alarm>> {
+        return localDataSource.getAllAlarms()
+    }
+
+    override suspend fun insertAlarm(alarm: Alarm): Long {
+        setAlarmType(alarm.type)
+        return localDataSource.insertAlarm(alarm)
+    }
+
+    override suspend fun deleteAlarm(alarm: Alarm): Int {
+        return localDataSource.deleteAlarm(alarm)
     }
 
     override suspend fun getLanguage(): String {
@@ -62,6 +77,8 @@ class Repo(
 
     override suspend fun getCity(): String = localDataSource.getCity()
 
+    override suspend fun setAlarmType(type: Constants.AlarmType) = localDataSource.setAlarmType(type)
+    override suspend fun getAlarmType() = localDataSource.getAlarmType()
 
 
     companion object{

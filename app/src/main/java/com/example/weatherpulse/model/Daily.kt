@@ -1,5 +1,7 @@
 package com.example.weatherpulse.model
 
+import java.io.Serializable
+
 data class Daily(
     val clouds: Int,
     val dew_point: Double,
@@ -21,4 +23,4 @@ data class Daily(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double
-)
+): Serializable

@@ -5,10 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.weatherpulse.ButtonBarScreen
+import com.example.weatherpulse.model.Alarm
 import com.example.weatherpulse.model.FavouritePlacesPojo
 import com.example.weatherpulse.model.LocationKeyConverter
 
-@Database(entities = [FavouritePlacesPojo::class], version = 1)
+@Database(entities = [FavouritePlacesPojo::class, Alarm::class], version = 1)
 @TypeConverters(LocationKeyConverter::class)
 abstract class WeatherDataBase: RoomDatabase() {
 
