@@ -1,13 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">نبض الطقس</string>
-    <string name="language">اللغه</string>
-
-
-
-
-
-
-
+    <string name="language">اللغة</string>
+    <string name="device_language">لغة الجهاز</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="measurement_system">نظام القياس</string>
+    <string name="metric">متري</string>
+    <string name="temp_c_wind_m_s">درجة الحرارة: °م، الرياح: م/ث</string>
+    <string name="imperial">إمبراطوري</string>
+    <string name="temp_f_wind_mph">درجة الحرارة: °ف، الرياح: ميل/س</string>
+    <string name="standard">قياسي</string>
+    <string name="temp_k_wind_m_s">درجة الحرارة: ك، الرياح: م/ث</string>
+    <string name="location_source">مصدر الموقع</string>
+    <string name="gps">نظام تحديد الموقع (GPS)</string>
+    <string name="map_picker">اختيار من الخريطة</string>
+    <string name="title_activity_alarm_dialog">نافذة التنبيه</string>
+    <string name="preview_location">عرض الموقع</string>
+    <string name="pick_location">اختر الموقع</string>
+    <string name="selected_location">الموقع المحدد</string>
+    <string name="search_city">ابحث عن مدينة</string>
+    <string name="city_not_found">لم يتم العثور على المدينة</string>
+    <string name="search">بحث</string>
+    <string name="confirm_location">تأكيد الموقع</string>
+    <string name="error">خطأ</string>
+    <string name="now">الآن</string>
+    <string name="feels_like">يشعر كأنها %1$s%2$s</string>
+    <string name="sunset_sunrise">🌇 غروب %1$s         🌅 شروق %2$s</string>
+    <string name="pressure">   🧭 الضغط</string>
+    <string name="wind">      💨 الرياح</string>
+    <string name="humidity">      💧 الرطوبة</string>
+    <string name="uv">  ☀️ الأشعة فوق البنفسجية</string>
+    <string name="clouds">☁️ الغيوم</string>
+    <string name="hpa">%1$s هيكتوباسكال</string>
+    <string name="hourly_forecast">توقعات كل ساعة</string>
+    <string name="day_forecast">توقعات لـ %1$s يوم</string>
+    <string name="pick_location_to_add">اختر الموقع للإضافة</string>
+    <string name="error_loading_favorites">حدث خطأ أثناء تحميل المفضلة</string>
+    <string name="dismiss">إغلاق</string>
+    <string name="location">الموقع: %1$s</string>
+    <string name="please_select_a_future_time">يرجى اختيار وقت مستقبلي</string>
+    <string name="select_type">اختر النوع:</string>
+    <string name="alarm">منبه</string>
+    <string name="notification">إشعار</string>
+    <string name="empty_alarm_message">رسالة تنبيه فارغة</string>
+    <string name="save_alarm">حفظ التنبيه</string>
 </resources>

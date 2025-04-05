@@ -34,10 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.weatherpulse.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -66,7 +68,7 @@ fun MapScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pick Location") },
+                title = { Text(stringResource(R.string.pick_location)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -75,7 +77,9 @@ fun MapScreen(
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()) {
 
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -115,7 +119,7 @@ fun MapScreen(
 
                                 marker = Marker(map).apply {
                                     position = point
-                                    title = "Selected Location"
+                                    title = context.getString(R.string.selected_location)
                                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                 }
                                 map.overlays.add(marker)
@@ -158,7 +162,7 @@ fun MapScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    label = { Text("Search city", color = Color.Black) },
+                    label = { Text(stringResource(R.string.search_city), color = Color.Black) },
                     textStyle = LocalTextStyle.current.copy(color = Color.Black),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Black,
@@ -190,7 +194,8 @@ fun MapScreen(
                                 marker = newMarker
                             },
                             onNotFound = {
-                                Toast.makeText(context, "City not found", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,
+                                    context.getString(R.string.city_not_found), Toast.LENGTH_SHORT).show()
                             }
                         )
                     })
@@ -221,7 +226,7 @@ fun MapScreen(
                         }
                     )
                 }) {
-                    Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Black)
+                    Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search), tint = Color.Black)
                 }
             }
 
@@ -250,10 +255,10 @@ fun MapScreen(
                     .padding(bottom = 64.dp)
                     .fillMaxWidth()
             ) {
-                Text("Confirm Location")
+                Text(stringResource(R.string.confirm_location))
             }
 
-            if (!selectedCity.isNullOrBlank() &&
+            if (selectedCity.isNotBlank() &&
                 selectedCity != "No location selected" &&
                 selectedCity.lowercase() != "null") {
                 Text(
@@ -263,7 +268,10 @@ fun MapScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 80.dp)
-                        .background(Color.Black.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small)
+                        .background(
+                            Color.Black.copy(alpha = 0.5f),
+                            shape = MaterialTheme.shapes.small
+                        )
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }

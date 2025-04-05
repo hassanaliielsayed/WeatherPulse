@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.weatherpulse.R
 import com.example.weatherpulse.alarm.viewmodel.AlarmViewModel
 import com.example.weatherpulse.model.Alarm
 import com.example.weatherpulse.util.Constants.AlarmType
@@ -44,7 +46,7 @@ fun AddAlarmScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Location: $city", style = MaterialTheme.typography.titleMedium)
+        Text(text = stringResource(R.string.location, city), style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(onClick = {
@@ -93,7 +95,7 @@ fun AddAlarmScreen(
 
         if (showPastTimeError) {
             Text(
-                text = "Please select a future time",
+                text = stringResource(R.string.please_select_a_future_time),
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -104,7 +106,7 @@ fun AddAlarmScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Select Type:", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.select_type), style = MaterialTheme.typography.bodyMedium)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -113,13 +115,13 @@ fun AddAlarmScreen(
                     selected = type == AlarmType.ALARM,
                     onClick = { type = AlarmType.ALARM }
                 )
-                Text("Alarm")
+                Text(stringResource(R.string.alarm))
                 Spacer(modifier = Modifier.width(16.dp))
                 RadioButton(
                     selected = type == AlarmType.NOTIFICATION,
                     onClick = { type = AlarmType.NOTIFICATION }
                 )
-                Text("Notification")
+                Text(stringResource(R.string.notification))
             }
         }
 
@@ -128,7 +130,8 @@ fun AddAlarmScreen(
         Button(onClick = {
 
             if (calendar == null) {
-                Toast.makeText(context, "Empty alarm message", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,
+                    context.getString(R.string.empty_alarm_message), Toast.LENGTH_LONG).show()
             } else {
 
                 val alarm = Alarm(
@@ -147,7 +150,7 @@ fun AddAlarmScreen(
                 navController.popBackStack()
             }
         }) {
-            Text("Save Alarm")
+            Text(stringResource(R.string.save_alarm))
         }
     }
 }

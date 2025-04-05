@@ -43,11 +43,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherpulse.R
 import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.model.Daily
 import com.example.weatherpulse.model.WeatherDetailsResponse
@@ -84,7 +86,7 @@ fun HomeScreen(
     }
 
     when (weatherState) {
-        is Result.Error -> ErrorScreen("Error")
+        is Result.Error -> ErrorScreen(stringResource(R.string.error))
         Result.Loading -> LoadingScreen()
         is Result.Success -> {
             val currentState = (weatherState as Result.Success).data
@@ -117,7 +119,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Now", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.now), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Text(
                         "${currentState.current.temp.toInt()}$tempUnit",
                         fontSize = 64.sp,
@@ -125,9 +127,13 @@ fun HomeScreen(
                     )
                     Text(currentState.current.weather[0].description, fontSize = 20.sp)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("🌇 Sunset $sunset         🌅 Sunrise $sunrise", fontSize = 16.sp)
+                    Text(stringResource(R.string.sunset_sunrise, sunset, sunrise), fontSize = 16.sp)
                     Text(
-                        "Feels like ${currentState.current.feels_like.toInt()}$tempUnit",
+                        stringResource(
+                            R.string.feels_like,
+                            currentState.current.feels_like.toInt(),
+                            tempUnit
+                        ),
                         fontSize = 16.sp
                     )
                 }
@@ -143,11 +149,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text("   🧭 Pressure", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        Text("      💨 Wind", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        Text("      💧 Humidity", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        Text("  ☀️ UV", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        Text("☁️ Clouds", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.pressure), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.wind), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.humidity), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.uv), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.clouds), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -156,7 +162,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text("${currentState.current.pressure} hPa", fontSize = 14.sp)
+                        Text(stringResource(R.string.hpa, currentState.current.pressure), fontSize = 14.sp)
                         Text("${currentState.current.wind_speed} $windUnit", fontSize = 14.sp)
                         Text("      ${currentState.current.humidity}%", fontSize = 14.sp)
                         Text("   ${currentState.current.uvi}", fontSize = 14.sp)
@@ -167,7 +173,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Column {
-                    Text("Hourly forecast", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.hourly_forecast), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyRow {
                         items(currentState.hourly.size - 24) { index ->
@@ -299,7 +305,7 @@ fun SevenDayForecast(dailyForecast: List<Daily>, tempUnit: String) {
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
         Text(
-            text = "${forecastToShow.size}-day forecast",
+            text = stringResource(R.string.day_forecast, forecastToShow.size),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp)
