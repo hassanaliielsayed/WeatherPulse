@@ -8,7 +8,7 @@ import com.example.weatherpulse.model.WeatherDetailsResponse
 import com.example.weatherpulse.repo.WeatherRepo
 import com.example.weatherpulse.util.Result
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.location.Location as AndroidLocation
 
@@ -17,7 +17,7 @@ class HomeViewModel(
 ) : ViewModel() {
 
     private val _mutableCurrentWeather = MutableStateFlow<Result<WeatherDetailsResponse>>(Result.Loading)
-    val mutableCurrentWeather: StateFlow<Result<WeatherDetailsResponse>> = _mutableCurrentWeather
+    val mutableCurrentWeather =  _mutableCurrentWeather.asStateFlow()
 
     var positionLat = 0.0
     var positionLong = 0.0
