@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.weatherpulse.R
 import com.example.weatherpulse.favourite.viewmodel.FavViewModel
 import com.example.weatherpulse.model.FavouritePlacesPojo
 import com.example.weatherpulse.model.LocationKey
@@ -69,7 +71,7 @@ fun FavoriteScreen(
                     onClick = onPickLocation,
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(Icons.Default.Place, contentDescription = "Pick location to add")
+                    Icon(Icons.Default.Place, contentDescription = stringResource(R.string.pick_location_to_add))
                 }
 
                 SnackbarHost(
@@ -107,7 +109,7 @@ fun FavoriteScreen(
             ) {
                 when (state) {
                     is Result.Loading -> CircularProgressIndicator()
-                    is Result.Error -> Text("Error loading favorites")
+                    is Result.Error -> Text(stringResource(R.string.error_loading_favorites))
                     is Result.Success<*> -> {
                         LazyColumn {
                             items(

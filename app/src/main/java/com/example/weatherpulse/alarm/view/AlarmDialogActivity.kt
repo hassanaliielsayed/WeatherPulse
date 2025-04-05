@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherpulse.R
 import com.example.weatherpulse.ui.theme.WeatherPulseTheme
 
 class AlarmDialogActivity : ComponentActivity() {
@@ -98,7 +100,7 @@ fun AlarmDialogContent(title: String, description: String, city: String, onDismi
             Text(text = "📍 $city", fontSize = 16.sp, color = Color.DarkGray)
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "Dismiss",
+                text = stringResource(R.string.dismiss),
                 fontSize = 18.sp,
                 color = Color.Red,
                 modifier = Modifier

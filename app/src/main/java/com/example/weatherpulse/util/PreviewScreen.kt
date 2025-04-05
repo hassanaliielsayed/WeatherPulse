@@ -11,6 +11,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.weatherpulse.R
 import com.example.weatherpulse.favourite.viewmodel.FavViewModel
 import com.example.weatherpulse.home.view.HomeScreen
 import com.example.weatherpulse.home.viewmodel.HomeViewModel
@@ -43,7 +45,7 @@ fun PreviewScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Preview Location") },
+                title = { Text(stringResource(R.string.preview_location)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
