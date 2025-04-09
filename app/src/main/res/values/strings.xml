@@ -44,4 +44,5 @@
     <string name="notification">Notification</string>
     <string name="empty_alarm_message">Empty alarm message</string>
     <string name="save_alarm">Save Alarm</string>
+    <string name="today">Today</string>
 </resources>

@@ -45,4 +45,5 @@
     <string name="notification">إشعار</string>
     <string name="empty_alarm_message">رسالة تنبيه فارغة</string>
     <string name="save_alarm">حفظ التنبيه</string>
+    <string name="today">اليوم</string>
 </resources>
