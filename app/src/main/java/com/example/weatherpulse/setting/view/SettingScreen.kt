@@ -22,10 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.weatherpulse.R
 import com.example.weatherpulse.setting.viewmodel.SettingViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingScreen(
-    viewModel: SettingViewModel,
+    viewModel: SettingViewModel = koinViewModel<SettingViewModel>(),
     onRequestMapPicker: () -> Unit,
     onRequestLocationPermission: () -> Unit,
     onRequestLocationEnable: () -> Unit,

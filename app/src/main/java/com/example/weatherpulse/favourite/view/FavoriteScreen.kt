@@ -26,11 +26,12 @@ import com.example.weatherpulse.model.LocationKey
 import com.example.weatherpulse.util.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(
-    viewModel: FavViewModel,
+    viewModel: FavViewModel = koinViewModel<FavViewModel>(),
     onPickLocation: () -> Unit,
     onCityClick: (locationKey: LocationKey, cityName: String) -> Unit
 ) {

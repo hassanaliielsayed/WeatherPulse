@@ -19,6 +19,7 @@ import com.example.weatherpulse.home.viewmodel.HomeViewModel
 import com.example.weatherpulse.model.FavouritePlacesPojo
 import com.example.weatherpulse.model.LocationKey
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -27,8 +28,8 @@ fun PreviewScreen(
     lat: Double,
     lon: Double,
     cityName: String,
-    homeViewModel: HomeViewModel,
-    favViewModel: FavViewModel,
+    homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
+    favViewModel: FavViewModel = koinViewModel<FavViewModel>(),
     onBack: () -> Unit
 ) {
     val locationState = remember {

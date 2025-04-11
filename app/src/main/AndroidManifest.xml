@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherPulse"
+        android:name=".MyApplication"
         tools:targetApi="31">
         <activity
             android:name=".alarm.view.AlarmDialogActivity"

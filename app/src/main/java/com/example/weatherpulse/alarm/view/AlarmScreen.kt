@@ -53,12 +53,13 @@ import com.example.weatherpulse.util.Constants.AlarmType
 import com.example.weatherpulse.util.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmScreen(
-    viewModel: AlarmViewModel,
+    viewModel: AlarmViewModel = koinViewModel<AlarmViewModel>(),
     onPickTime: () -> Unit,
 ) {
 

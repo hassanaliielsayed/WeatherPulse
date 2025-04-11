@@ -31,6 +31,8 @@ import com.example.weatherpulse.setting.view.SettingScreen
 import com.example.weatherpulse.setting.viewmodel.SettingViewModel
 import com.example.weatherpulse.util.PreviewScreen
 import com.example.weatherpulse.util.SettingHelpers
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -41,13 +43,15 @@ fun ButtonNavGraph(
 ) {
     val context = LocalContext.current
 
-    val repo = Repo.getInstance(
-        WeatherRemoteDataSource(WeatherClient.weatherService),
-        WeatherLocalDataSource(
-            WeatherDataBase.getInstance(context).getDao(),
-            SharedPref.getInstance(context)
-        )
-    )
+//    val repo = Repo.getInstance(
+//        WeatherRemoteDataSource(WeatherClient.weatherService),
+//        WeatherLocalDataSource(
+//            WeatherDataBase.getInstance(context).getDao(),
+//            SharedPref.getInstance(context)
+//        )
+//    )
+
+    //val repo = koinInject<Repo>()
 
     NavHost(
         navController = navController,
@@ -55,17 +59,20 @@ fun ButtonNavGraph(
     ) {
         // Home
         composable(route = ButtonBarScreen.Home.route) {
-            val homeViewModel: HomeViewModel = viewModel(
-                factory = HomeViewModel.HomeFactory(repo)
-            )
+//            val homeViewModel: HomeViewModel = viewModel(
+//                factory = HomeViewModel.HomeFactory(repo)
+//            )
+
+            val homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>()
             HomeScreen(homeViewModel, myLocation, weatherResponse)
         }
 
         // Favorites
         composable(route = ButtonBarScreen.Favourite.route) {
-            val favViewModel: FavViewModel = viewModel(
-                factory = FavViewModel.FavFactory(repo)
-            )
+//            val favViewModel: FavViewModel = viewModel(
+//                factory = FavViewModel.FavFactory(repo)
+//            )
+            val favViewModel: FavViewModel = koinViewModel<FavViewModel>()
             FavoriteScreen(
                 viewModel = favViewModel,
                 onPickLocation = {
@@ -84,9 +91,11 @@ fun ButtonNavGraph(
 
         // Alarms
         composable(route = ButtonBarScreen.Alarm.route) {
-            val alarmViewModel: AlarmViewModel = viewModel(
-                factory = AlarmViewModel.AlarmFactory(repo)
-            )
+//            val alarmViewModel: AlarmViewModel = viewModel(
+//                factory = AlarmViewModel.AlarmFactory(repo)
+//            )
+
+            val alarmViewModel: AlarmViewModel = koinViewModel<AlarmViewModel>()
             AlarmScreen(
                 viewModel = alarmViewModel,
                 onPickTime = {
@@ -97,9 +106,10 @@ fun ButtonNavGraph(
 
         // Settings
         composable(route = ButtonBarScreen.Setting.route) {
-            val settingViewModel: SettingViewModel = viewModel(
-                factory = SettingViewModel.SettingFactory(repo)
-            )
+//            val settingViewModel: SettingViewModel = viewModel(
+//                factory = SettingViewModel.SettingFactory(repo)
+//            )
+            val settingViewModel: SettingViewModel = koinViewModel<SettingViewModel>()
             SettingScreen(
                 viewModel = settingViewModel,
                 onRequestMapPicker = {
@@ -170,10 +180,11 @@ fun ButtonNavGraph(
             val lat = backStackEntry.arguments?.getFloat("lat")?.toDouble() ?: 0.0
             val lon = backStackEntry.arguments?.getFloat("lon")?.toDouble() ?: 0.0
             val city = backStackEntry.arguments?.getString("city") ?: ""
-            val alarmViewModel: AlarmViewModel = viewModel(
-                factory = AlarmViewModel.AlarmFactory(repo)
-            )
+//            val alarmViewModel: AlarmViewModel = viewModel(
+//                factory = AlarmViewModel.AlarmFactory(repo)
+//            )
 
+            val alarmViewModel: AlarmViewModel = koinViewModel<AlarmViewModel>()
             AddAlarmScreen(
                 navController = navController,
                 lat = lat,
@@ -190,12 +201,16 @@ fun ButtonNavGraph(
             val city = navController.previousBackStackEntry?.savedStateHandle?.get<String>("city")
 
             if (lat != null && lon != null && city != null) {
-                val homeViewModel: HomeViewModel = viewModel(
-                    factory = HomeViewModel.HomeFactory(repo)
-                )
-                val favViewModel: FavViewModel = viewModel(
-                    factory = FavViewModel.FavFactory(repo)
-                )
+//                val homeViewModel: HomeViewModel = viewModel(
+//                    factory = HomeViewModel.HomeFactory(repo)
+//                )
+//                val favViewModel: FavViewModel = viewModel(
+//                    factory = FavViewModel.FavFactory(repo)
+//                )
+
+                val homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>()
+                val favViewModel: FavViewModel = koinViewModel<FavViewModel>()
+
                 PreviewScreen(
                     lat = lat,
                     lon = lon,

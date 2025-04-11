@@ -21,6 +21,7 @@ import com.example.weatherpulse.util.Constants.openNotification
 import com.example.weatherpulse.util.WorkRequestManager.convertToAlarm
 import com.example.weatherpulse.util.WorkRequestManager.removeWork
 import kotlinx.coroutines.*
+import org.koin.compose.koinInject
 import java.util.*
 
 class MyCoroutineWorker(private val context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {

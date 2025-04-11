@@ -20,6 +20,7 @@ import com.example.weatherpulse.alarm.viewmodel.AlarmViewModel
 import com.example.weatherpulse.model.Alarm
 import com.example.weatherpulse.util.Constants.AlarmType
 import com.example.weatherpulse.util.WorkRequestManager.createWorkRequest
+import org.koin.androidx.compose.koinViewModel
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,7 +30,7 @@ fun AddAlarmScreen(
     lat: Double,
     lon: Double,
     city: String,
-    viewModel: AlarmViewModel
+    viewModel: AlarmViewModel = koinViewModel<AlarmViewModel>()
 ) {
     val context = LocalContext.current
     var time by remember { mutableStateOf("Select Time") }

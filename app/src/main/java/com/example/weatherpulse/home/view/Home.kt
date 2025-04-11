@@ -60,6 +60,7 @@ import com.example.weatherpulse.util.ConnectionLiveData
 import com.example.weatherpulse.util.Constants.ZERO
 import com.example.weatherpulse.util.Constants.getWeatherIconRes
 import com.example.weatherpulse.util.Result
+import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -68,7 +69,7 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    viewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
     location: MutableState<Location?>,
     weatherResponse: WeatherDetailsResponse? = null,
 ) {

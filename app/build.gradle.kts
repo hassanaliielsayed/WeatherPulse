@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.1.10"
 }
 
 android {
@@ -103,6 +104,11 @@ dependencies {
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("org.mockito:mockito-core:4.6.1")
     testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
+    val koin_android_version = "4.0.2"
+    implementation("io.insert-koin:koin-android:$koin_android_version")
+    implementation("io.insert-koin:koin-androidx-compose:$koin_android_version")
+    implementation("io.insert-koin:koin-androidx-compose-navigation:$koin_android_version")
 
 
 
