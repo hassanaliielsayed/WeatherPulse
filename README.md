@@ -22,7 +22,8 @@ Choose a language (Arabic – English)
   * Room
   * Retrofit
   * Gson
-  * Kotlin 
+  * Kotlin
+  * Dependency Injection
   * Coroutine
   * Coroutine worker
   * Notification
